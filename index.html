@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en-US" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Story Generator</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      
+      :root[data-theme="dark"] {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --bg-main: #0f172a;
+        --bg-card: rgba(30, 41, 59, 0.95);
+        --text: #e2e8f0;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --gradient-bg: linear-gradient(45deg, #0f172a, #1e1b4b);
+        --story-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(79, 70, 229, 0.1));
+      }
+
+      :root[data-theme="light"] {
+        --primary: #4f46e5;
+        --primary-dark: #3730a3;
+        --bg-main: #f1f5f9;
+        --bg-card: rgba(255, 255, 255, 0.9);
+        --text: #1e293b;
+        --text-muted: #64748b;
+        --border: #cbd5e1;
+        --gradient-bg: linear-gradient(45deg, #f1f5f9, #e2e8f0);
+        --story-bg: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(99, 102, 241, 0.05));
+      }
+
+      @keyframes rgb-border {
+        0% { border-color: #ff0000; }
+        17% { border-color: #ff00ff; }
+        33% { border-color: #0000ff; }
+        50% { border-color: #00ffff; }
+        67% { border-color: #00ff00; }
+        83% { border-color: #ffff00; }
+        100% { border-color: #ff0000; }
+      }
+
+      @keyframes rgb-shadow {
+        0% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.3); }
+        17% { box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); }
+        33% { box-shadow: 0 0 30px rgba(0, 0, 255, 0.3); }
+        50% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
+        67% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.3); }
+        83% { box-shadow: 0 0 30px rgba(255, 255, 0, 0.3); }
+        100% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.3); }
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-main);
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--text);
+        line-height: 1.6;
+        background: var(--gradient-bg);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+      }
+
+      @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .container {
+        background-color: var(--bg-card);
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        padding: 2.5rem;
+        width: 95%;
+        max-width: 800px;
+        border: 2px solid var(--primary);
+        backdrop-filter: blur(10px);
+        animation: rgb-border 10s linear infinite, rgb-shadow 10s linear infinite;
+        transition: transform 0.3s ease;
+      }
+
+      .container:hover {
+        transform: translateY(-5px);
+      }
+
+      h1 {
+        text-align: center;
+        background: linear-gradient(45deg, #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00);
+        background-size: 300% 300%;
+        animation: gradient 5s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        font-size: 2.5rem;
+        letter-spacing: -0.5px;
+        text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+      }
+
+      .form-group:hover {
+        transform: translateX(10px);
+      }
+
+      label {
+        font-weight: 500;
+        display: block;
+        margin-bottom: 0.75rem;
+        color: var(--text);
+        font-size: 1rem;
+        transition: color 0.3s ease;
+      }
+
+      .form-group:hover label {
+        color: #6366f1;
+      }
+
+      input[type="text"] {
+        padding: 1rem 1.25rem;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 1.1rem;
+        color: var(--text);
+        transition: all 0.3s ease;
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        transform: scale(1.02);
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 2rem;
+        margin-top: 0.75rem;
+      }
+
+      .radio-container {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
+
+      .radio-container:hover {
+        transform: translateY(-2px);
+      }
+
+      input[type="radio"] {
+        margin-right: 0.75rem;
+        accent-color: #6366f1;
+        cursor: pointer;
+        transform: scale(1.2);
+      }
+
+      .button-container {
+        text-align: center;
+        margin-top: 2.5rem;
+      }
+
+      button.randomize {
+        background: linear-gradient(45deg, #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00);
+        background-size: 300% 300%;
+        animation: gradient 5s ease infinite;
+        color: white;
+        border: none;
+        padding: 1.25rem 2.5rem;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        width: 100%;
+        max-width: 400px;
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      button.randomize:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        animation: pulse 1.5s ease infinite;
+      }
+
+      button.randomize:active {
+        transform: translateY(0);
+      }
+
+      button.randomize:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      p.story {
+        background: var(--story-bg);
+        color: var(--text);
+        padding: 2rem;
+        border-radius: 16px;
+        visibility: hidden;
+        margin-top: 2.5rem;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        border: 2px solid var(--border);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      p.story.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        animation: rgb-border 10s linear infinite;
+      }
+
+      p.story::before {
+        content: '"';
+        font-size: 5rem;
+        color: var(--primary);
+        opacity: 0.2;
+        position: absolute;
+        top: -1rem;
+        left: 1rem;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 2.5rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+
+      footer:hover {
+        opacity: 1;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1.5rem;
+          width: 100%;
+        }
+        
+        h1 {
+          font-size: 2rem;
+        }
+        
+        p.story {
+          font-size: 1.1rem;
+          padding: 1.5rem;
+        }
+
+        .radio-group {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg-dark);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 5px;
+        animation: rgb-border 10s linear infinite;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Theme switcher styles */
+      .theme-switch {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--bg-card);
+        border: 2px solid var(--primary);
+        border-radius: 50px;
+        padding: 5px;
+        width: 60px;
+        height: 30px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      .theme-switch:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      }
+
+      .theme-switch-handle {
+        background: var(--primary);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        transform: translateX(0);
+        transition: transform 0.3s ease;
+      }
+
+      [data-theme="light"] .theme-switch-handle {
+        transform: translateX(30px);
+      }
+
+      .theme-switch::before {
+        content: "🌙";
+        position: absolute;
+        left: 7px;
+        top: 4px;
+        font-size: 14px;
+      }
+
+      .theme-switch::after {
+        content: "☀️";
+        position: absolute;
+        right: 7px;
+        top: 4px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="theme-switch">
+      <div class="theme-switch-handle"></div>
+    </div>
+    <div class="container">
+      <h1>Story Generator</h1>
+      
+      <div class="form-group">
+        <label for="customname">Enter protagonist's name:</label>
+        <input id="customname" type="text" placeholder="Type a name..." autocomplete="off" />
+      </div>
+      
+      <div class="form-group">
+        <label>Select region:</label>
+        <div class="radio-group">
+          <div class="radio-container">
+            <input id="us" type="radio" name="ukus" value="us" checked />
+            <label for="us">United States</label>
+          </div>
+          <div class="radio-container">
+            <input id="uk" type="radio" name="ukus" value="uk" />
+            <label for="uk">United Kingdom</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="button-container">
+        <button class="randomize">Generate Story</button>
+      </div>
+      
+      <p class="story"></p>
+      
+      <footer>
+        Story Generator • Create unique tales with a click ✨
+      </footer>
+    </div>
+    
+    <script src="main.js"></script>
+    <script>
+      // Theme switcher functionality
+      const themeSwitch = document.querySelector('.theme-switch');
+      const html = document.documentElement;
+      
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+
+      themeSwitch.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    </script>
+  </body>
+</html>
